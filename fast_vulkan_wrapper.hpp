@@ -1,6 +1,7 @@
 #pragma once
 
-#ifdef VK_USE_PLATFORM_WIN32_KHR
+#ifdef _WIN32
+#  define VK_USE_PLATFORM_WIN32_KHR
 #  ifndef _WINDOWS_
 #    define NOGDICAPMASKS     // CC_*, LC_*, PC_*, CP_*, TC_*, RC_
 #    define NOVIRTUALKEYCODES // VK_*
@@ -53,8 +54,7 @@
 #pragma warning(disable:4820) // S: N bytes padding added after data member M
 #define VK_NO_PROTOTYPES 1
 #define VK_LAYER_KHRONOS_VALIDATION_NAME "VK_LAYER_KHRONOS_validation"
-#include <vulkan/vk_platform.h>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 #pragma warning(pop)
 
 namespace fvkw
@@ -108,9 +108,14 @@ namespace fvkw
         VkResult CreateDebugUtilsMessenger(const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pMessenger);
         void DestroyDebugUtilsMessenger(VkDebugUtilsMessengerEXT messenger, VkAllocationCallbacks* pAllocator);
         void SubmitDebugUtilsMessage(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageTypes, VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
-    #if defined(VK_KHR_win32_surface)
+    #ifdef _WIN32
         VkResult CreateWin32Surface(const VkWin32SurfaceCreateInfoKHR* pCreateInfo, VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
         VkBool32 GetPhysicalDeviceWin32PresentationSupport(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex);
+    #endif
+    public:
+        // Specializations
+    #ifdef _WIN32
+        VkResult CreateWin32Surface(HINSTANCE hinstance, HWND hwnd, VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
     #endif
     private:
         friend class Device;
@@ -161,6 +166,16 @@ namespace fvkw
         PFN_vkCreateWin32SurfaceKHR                         vkCreateWin32SurfaceKHR;
         PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR  vkGetPhysicalDeviceWin32PresentationSupportKHR;
     #endif
+    };
+
+    struct Image
+    {
+        VkImage    image;
+        VkFormat   format;
+        VkExtent3D extent;
+        uint32_t   levels;
+        uint32_t   layers;
+        operator VkImage() { return image; }
     };
 
     class Device
@@ -376,6 +391,12 @@ namespace fvkw
         void CmdInsertDebugUtilsLabel(VkCommandBuffer commandBuffer, const VkDebugUtilsLabelEXT* pLabelInfo);
         VkResult CreateSwapchain(const VkSwapchainCreateInfoKHR* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSwapchainKHR* pSwapchain);
         void DestroySwapchain(VkSwapchainKHR swapchain, const VkAllocationCallbacks* pAllocator);
+    public:
+        // Specializations
+        VkResult CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore);
+        VkResult CreateImage(const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, Image* pImage);
+        VkResult BeginCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferUsageFlags flags);
+        VkResult AllocateCommandBuffers(VkCommandPool commandPool, VkCommandBufferLevel level, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers);
     private:
         VkDevice                                     device;
         // VK_VERSION_1_0

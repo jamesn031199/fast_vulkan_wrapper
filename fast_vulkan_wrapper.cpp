@@ -52,8 +52,15 @@
 namespace fvkw
 {
 
+
 #ifdef _WIN32
-    static PFN_vkGetInstanceProcAddr                  const vkGetInstanceProcAddr                  = (PFN_vkGetInstanceProcAddr)GetProcAddress(GetModuleHandleA("vulkan-1.dll"), "vkGetInstanceProcAddr");
+    struct Library
+    {
+        HMODULE lib;
+        Library() { lib = LoadLibrary("vulkan-1.dll"); }
+        ~Library() { FreeLibrary(lib); }
+    } static const Lib;
+    static PFN_vkGetInstanceProcAddr                  const vkGetInstanceProcAddr                  = (PFN_vkGetInstanceProcAddr)GetProcAddress(Lib.lib, "vkGetInstanceProcAddr");
 #endif
     static PFN_vkEnumerateInstanceLayerProperties     const vkEnumerateInstanceLayerProperties     = (PFN_vkEnumerateInstanceLayerProperties)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceLayerProperties");
     static PFN_vkEnumerateInstanceExtensionProperties const vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceExtensionProperties");
@@ -292,7 +299,7 @@ namespace fvkw
     {
         return vkSubmitDebugUtilsMessageEXT(instance, messageSeverity, messageTypes, pCallbackData);
     }
-#if defined(VK_KHR_win32_surface)
+
     VkResult Instance::CreateWin32Surface(const VkWin32SurfaceCreateInfoKHR* pCreateInfo, VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface)
     {
         return vkCreateWin32SurfaceKHR(instance, pCreateInfo, pAllocator, pSurface);
@@ -302,7 +309,13 @@ namespace fvkw
     {
         return vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, queueFamilyIndex);
     }
-#endif
+
+    VkResult Instance::CreateWin32Surface(HINSTANCE hinstance, HWND hwnd, VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface)
+    {
+        VkWin32SurfaceCreateInfoKHR ci ={ VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, nullptr, 0, hinstance, hwnd };
+        return CreateWin32Surface(&ci, pAllocator, pSurface);
+    }
+
     VkResult Device::Create(const Instance *pInstance, VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCreateInfo, const VkAllocationCallbacks *pAllocator)
     {
         VkResult result;
@@ -637,6 +650,13 @@ namespace fvkw
     VkResult Device::CreateSemaphore(const VkSemaphoreCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore)
     {
         return vkCreateSemaphore(device, pCreateInfo, pAllocator, pSemaphore);
+    }
+
+    VkResult Device::CreateSemaphore(VkSemaphoreType semaphoreType, uint64_t initialValue, const VkAllocationCallbacks* pAllocator, VkSemaphore* pSemaphore)
+    {
+        VkSemaphoreTypeCreateInfo stci ={ VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO, nullptr, semaphoreType, initialValue };
+        VkSemaphoreCreateInfo ci ={ VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, &stci, 0 };
+        return CreateSemaphore(&ci, pAllocator, pSemaphore);
     }
 
     void Device::DestroySemaphore(VkSemaphore semaphore, const VkAllocationCallbacks* pAllocator)
@@ -1527,6 +1547,30 @@ namespace fvkw
     void Device::CmdInsertDebugUtilsLabel(VkCommandBuffer commandBuffer, const VkDebugUtilsLabelEXT* pLabelInfo)
     {
         return vkCmdInsertDebugUtilsLabelEXT(commandBuffer, pLabelInfo);
+    }
+
+    VkResult Device::CreateImage(const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, Image* pImage)
+    {
+        VkResult result;
+        result = CreateImage(pCreateInfo, pAllocator, &pImage->image);
+        if (result != VK_SUCCESS) return result;
+        pImage->format = pCreateInfo->format;
+        pImage->extent = pCreateInfo->extent;
+        pImage->levels = pCreateInfo->mipLevels;
+        pImage->layers = pCreateInfo->arrayLayers;
+        return result;
+    }
+
+    VkResult Device::BeginCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferUsageFlags flags)
+    {
+        VkCommandBufferBeginInfo cbbi ={ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, flags, nullptr };
+        return BeginCommandBuffer(commandBuffer, &cbbi);
+    }
+
+    VkResult Device::AllocateCommandBuffers(VkCommandPool commandPool, VkCommandBufferLevel level, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers)
+    {
+        VkCommandBufferAllocateInfo cbai ={ VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO, nullptr, commandPool, level, commandBufferCount };
+        return AllocateCommandBuffers(&cbai, pCommandBuffers);
     }
 
 }
