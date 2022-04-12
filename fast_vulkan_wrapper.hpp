@@ -1,6 +1,5 @@
 #pragma once
 
-<<<<<<< HEAD
 #ifdef VK_USE_PLATFORM_WIN32_KHR
 #  ifndef _WINDOWS_
 #    define NOGDICAPMASKS     // CC_*, LC_*, PC_*, CP_*, TC_*, RC_
@@ -50,8 +49,6 @@
 #  endif
 #endif
 
-=======
->>>>>>> 504348eb49241148846ff6cf134b0e5b20e7589d
 #pragma warning(push)
 #pragma warning(disable:4820) // S: N bytes padding added after data member M
 #define VK_NO_PROTOTYPES 1
