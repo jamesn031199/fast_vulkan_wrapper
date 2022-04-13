@@ -348,3 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/fast_vulkan_wrapper.sln
+/fast_vulkan_wrapper.vcxproj
+/fast_vulkan_wrapper.vcxproj.filters
