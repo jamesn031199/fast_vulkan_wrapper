@@ -1561,6 +1561,12 @@ namespace fvkw
         return result;
     }
 
+    VkResult Device::CreateCommandPool(VkCommandPoolCreateFlags flags, uint32_t queueFamilyIndex, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool)
+    {
+        VkCommandPoolCreateInfo ci ={ VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO, nullptr, flags, queueFamilyIndex };
+        return CreateCommandPool(&ci, pAllocator, pCommandPool);
+    }
+
     VkResult Device::BeginCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferUsageFlags flags)
     {
         VkCommandBufferBeginInfo cbbi ={ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, flags, nullptr };
