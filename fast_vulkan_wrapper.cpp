@@ -310,6 +310,33 @@ namespace fvkw
         return vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice, queueFamilyIndex);
     }
 
+    void Instance::CreatePhysicalDevice(VkPhysicalDevice physicalDevice, PhysicalDevice *pPhysicalDevice)
+    {
+        pPhysicalDevice->physicalDevice = physicalDevice;
+
+        pPhysicalDevice->properties2.sType         = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+        pPhysicalDevice->vulkan11_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
+        pPhysicalDevice->vulkan12_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
+        pPhysicalDevice->vulkan13_properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES;
+        pPhysicalDevice->features2.sType           = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+        pPhysicalDevice->vulkan11_features.sType   = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+        pPhysicalDevice->vulkan12_features.sType   = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+        pPhysicalDevice->vulkan13_features.sType   = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+
+        pPhysicalDevice->properties2.pNext         = &pPhysicalDevice->vulkan11_properties;
+        pPhysicalDevice->vulkan11_properties.pNext = &pPhysicalDevice->vulkan12_properties;
+        pPhysicalDevice->vulkan12_properties.pNext = &pPhysicalDevice->vulkan13_properties;
+        pPhysicalDevice->vulkan13_properties.pNext = nullptr;
+        pPhysicalDevice->features2.pNext           = &pPhysicalDevice->vulkan11_features;
+        pPhysicalDevice->vulkan11_features.pNext   = &pPhysicalDevice->vulkan12_features;
+        pPhysicalDevice->vulkan12_features.pNext   = &pPhysicalDevice->vulkan13_features;
+        pPhysicalDevice->vulkan13_features.pNext   = nullptr;
+
+        GetPhysicalDeviceMemoryProperties(physicalDevice, &pPhysicalDevice->memory_properties);
+        GetPhysicalDeviceProperties2(physicalDevice, &pPhysicalDevice->properties2);
+        GetPhysicalDeviceFeatures2(physicalDevice, &pPhysicalDevice->features2);
+    }
+
     VkResult Instance::CreateWin32Surface(HINSTANCE hinstance, HWND hwnd, VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface)
     {
         VkWin32SurfaceCreateInfoKHR ci ={ VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, nullptr, 0, hinstance, hwnd };

@@ -63,6 +63,21 @@ namespace fvkw
     VkResult EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, VkLayerProperties* pProperties);
     VkResult EnumerateInstanceExtensionProperties(const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties);
 
+    struct PhysicalDevice
+    {
+        VkPhysicalDevice                                   physicalDevice;
+        VkPhysicalDeviceMemoryProperties                   memory_properties;
+        VkPhysicalDeviceProperties2                        properties2;
+        VkPhysicalDeviceVulkan11Properties                 vulkan11_properties;
+        VkPhysicalDeviceVulkan12Properties                 vulkan12_properties;
+        VkPhysicalDeviceVulkan13Properties                 vulkan13_properties;
+        VkPhysicalDeviceFeatures2                          features2;
+        VkPhysicalDeviceVulkan11Features                   vulkan11_features;
+        VkPhysicalDeviceVulkan12Features                   vulkan12_features;
+        VkPhysicalDeviceVulkan13Features                   vulkan13_features;
+        operator VkPhysicalDevice() { return physicalDevice; }
+    };
+
     class Instance
     {
     public:
@@ -113,6 +128,8 @@ namespace fvkw
         VkBool32 GetPhysicalDeviceWin32PresentationSupport(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex);
     #endif
     public:
+        // Custom
+        void CreatePhysicalDevice(VkPhysicalDevice physicalDevice, PhysicalDevice *pPhysicalDevice);
         // Specializations
     #ifdef _WIN32
         VkResult CreateWin32Surface(HINSTANCE hinstance, HWND hwnd, VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
