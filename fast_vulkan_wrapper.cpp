@@ -52,19 +52,31 @@
 namespace fvkw
 {
 
-
 #ifdef _WIN32
-    struct Library
+    static HMODULE VulkanDLL;
+#endif                                                                                      
+    static PFN_vkGetInstanceProcAddr                  vkGetInstanceProcAddr;
+    static PFN_vkEnumerateInstanceLayerProperties     vkEnumerateInstanceLayerProperties;
+    static PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties;
+    static PFN_vkCreateInstance                       vkCreateInstance;
+
+    void Initialize()
     {
-        HMODULE lib;
-        Library() { lib = LoadLibrary("vulkan-1.dll"); }
-        ~Library() { FreeLibrary(lib); }
-    } static const Lib;
-    static PFN_vkGetInstanceProcAddr                  const vkGetInstanceProcAddr                  = (PFN_vkGetInstanceProcAddr)GetProcAddress(Lib.lib, "vkGetInstanceProcAddr");
-#endif
-    static PFN_vkEnumerateInstanceLayerProperties     const vkEnumerateInstanceLayerProperties     = (PFN_vkEnumerateInstanceLayerProperties)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceLayerProperties");
-    static PFN_vkEnumerateInstanceExtensionProperties const vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceExtensionProperties");
-    static PFN_vkCreateInstance                       const vkCreateInstance                       = (PFN_vkCreateInstance)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkCreateInstance");
+    #ifdef _WIN32
+        VulkanDLL = LoadLibrary(TEXT("vulkan-1.dll"));
+        vkGetInstanceProcAddr                  = (PFN_vkGetInstanceProcAddr)GetProcAddress(VulkanDLL, "vkGetInstanceProcAddr");
+    #endif
+        vkEnumerateInstanceLayerProperties     = (PFN_vkEnumerateInstanceLayerProperties)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceLayerProperties");
+        vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkEnumerateInstanceExtensionProperties");
+        vkCreateInstance                       = (PFN_vkCreateInstance)vkGetInstanceProcAddr(VK_NULL_HANDLE, "vkCreateInstance");
+    }
+
+    void Terminate()
+    {
+    #ifdef _WIN32
+        FreeLibrary(VulkanDLL);
+    #endif
+    }
 
     VkResult EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, VkLayerProperties* pProperties)
     {

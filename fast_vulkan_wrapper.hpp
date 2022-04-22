@@ -60,6 +60,9 @@
 namespace fvkw
 {
 
+    void Initialize();
+    void Terminate();
+
     VkResult EnumerateInstanceLayerProperties(uint32_t* pPropertyCount, VkLayerProperties* pProperties);
     VkResult EnumerateInstanceExtensionProperties(const char* pLayerName, uint32_t* pPropertyCount, VkExtensionProperties* pProperties);
 

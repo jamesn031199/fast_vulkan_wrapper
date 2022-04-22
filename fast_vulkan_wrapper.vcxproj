@@ -24,7 +24,7 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <EnableUnitySupport />
     <UseOfMfc />
-    <CharacterSet />
+    <CharacterSet>Unicode</CharacterSet>
     <CLRSupport />
     <EnableASAN />
     <SpectreMitigation />
@@ -36,7 +36,7 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <EnableUnitySupport />
     <UseOfMfc />
-    <CharacterSet />
+    <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CLRSupport />
     <EnableASAN />
@@ -135,7 +135,7 @@
       <FavorSizeOrSpeed />
       <EnableFiberSafeOptimizations />
       <WholeProgramOptimization />
-      <PreprocessorDefinitions>NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;UNICODE;</PreprocessorDefinitions>
       <BasicRuntimeChecks />
       <RuntimeLibrary />
       <ModuleOutputFile />
@@ -204,7 +204,7 @@
       <PreprocessSuppressLineNumbers />
       <PreprocessKeepComments />
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.204.0\Include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;UNICODE;</PreprocessorDefinitions>
       <BasicRuntimeChecks />
       <RuntimeLibrary />
       <ModuleOutputFile />
