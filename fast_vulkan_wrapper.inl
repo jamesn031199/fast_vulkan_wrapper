@@ -1471,7 +1471,7 @@ namespace fvkw
 
     VkResult Device::AcquireNextImage(VkSwapchainKHR swapchain, uint64_t timeout, VkSemaphore semaphore, VkFence fence, uint32_t* pImageIndex)
     {
-        return vkAcquireNextImageKHR(device, swapchain, timeout, semaphore, fence, pImageIndex);
+         return vkAcquireNextImageKHR(device, swapchain, timeout, semaphore, fence, pImageIndex);
     }
 
     VkResult Device::QueuePresent(VkQueue queue, const VkPresentInfoKHR* pPresentInfo)
@@ -1561,6 +1561,12 @@ namespace fvkw
     {
         VkCommandBufferBeginInfo cbbi ={ VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, nullptr, flags, nullptr };
         return BeginCommandBuffer(commandBuffer, &cbbi);
+    }
+
+    VkResult Device::AllocateDescriptorSets(VkDescriptorPool descriptorPool, uint32_t descriptorSetCount, const VkDescriptorSetLayout* pSetLayouts, VkDescriptorSet* pDescriptorSets)
+    {
+        VkDescriptorSetAllocateInfo dsai ={ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO, nullptr, descriptorPool, descriptorSetCount, pSetLayouts };
+        return AllocateDescriptorSets(&dsai, pDescriptorSets);
     }
 
     VkResult Device::AllocateCommandBuffers(VkCommandPool commandPool, VkCommandBufferLevel level, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers)

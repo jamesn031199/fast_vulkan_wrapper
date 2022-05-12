@@ -383,6 +383,7 @@ namespace fvkw
         FVKW_INLINE VkResult CreateImage(const VkImageCreateInfo* pCreateInfo, const VkAllocationCallbacks* pAllocator, Image* pImage);
         FVKW_INLINE VkResult CreateCommandPool(VkCommandPoolCreateFlags flags, uint32_t queueFamilyIndex, const VkAllocationCallbacks* pAllocator, VkCommandPool* pCommandPool);
         FVKW_INLINE VkResult BeginCommandBuffer(VkCommandBuffer commandBuffer, VkCommandBufferUsageFlags flags);
+        FVKW_INLINE VkResult AllocateDescriptorSets(VkDescriptorPool descriptorPool, uint32_t descriptorSetCount, const VkDescriptorSetLayout* pSetLayouts, VkDescriptorSet* pDescriptorSets);
         FVKW_INLINE VkResult AllocateCommandBuffers(VkCommandPool commandPool, VkCommandBufferLevel level, uint32_t commandBufferCount, VkCommandBuffer* pCommandBuffers);
     private:
         VkDevice                                     device;
